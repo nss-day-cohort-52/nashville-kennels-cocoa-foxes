@@ -1,5 +1,7 @@
 import React from "react"
 import { useLocation } from "react-router-dom";
+import { AnimalListComponent } from "../animals/AnimalList";
+import EmployeeList from "../employees/EmployeeList";
 import "./SearchResults.css"
 
 
@@ -13,6 +15,7 @@ export default () => {
                     <h2>Matching Animals</h2>
                     <section className="animals">
                         Display matching animals
+
                     </section>
                 </React.Fragment>
             )
@@ -26,6 +29,7 @@ export default () => {
                     <h2>Matching Employees</h2>
                     <section className="employees">
                         Display matching employees
+                        
                     </section>
                 </React.Fragment>
             )
