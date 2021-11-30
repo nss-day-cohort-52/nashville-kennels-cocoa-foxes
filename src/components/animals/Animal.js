@@ -140,10 +140,10 @@ export const Animal = ({ animal, syncAnimals,
                                            AnimalRepository.delete(currentAnimal.id) 
                                         }) // Remove animal
                                         .then(() => {
-                                            AnimalRepository.getAll(animal)
+                                            syncAnimals()
                                         }) // Get all animals
                                         .then(() => {
-                                            history.push("/animals")
+                                          
                                         })
                                 }>Discharge</button>
                                 : ""
