@@ -4,7 +4,7 @@ import EmployeeRepository from "../../repositories/EmployeeRepository"
 import "./EmployeeList.css"
 
 
-export default () => {
+export default ({searchResults}) => {
     const [emps, setEmployees] = useState([])
 
     useEffect(
@@ -13,11 +13,17 @@ export default () => {
         }, []
     )
 
+    useEffect(
+        () => {
+            setEmployees(searchResults)
+        }, [searchResults]
+    )
+
     return (
         <>
             <div className="employees">
                 {
-                    emps.map(a => <Employee key={a.id} employee={a} />)
+                    emps?.map(a => <Employee key={a.id} employee={a} />)
                 }
             </div>
         </>

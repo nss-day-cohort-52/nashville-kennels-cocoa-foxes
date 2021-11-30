@@ -12,7 +12,7 @@ import "./AnimalList.css"
 import "./cursor.css"
 
 
-export const AnimalListComponent = (props) => {
+export const AnimalListComponent = ({searchResults}) => {
     const [animals, petAnimals] = useState([])
     const [animalOwners, setAnimalOwners] = useState([])
     const [owners, updateOwners] = useState([])
@@ -24,6 +24,10 @@ export const AnimalListComponent = (props) => {
     const syncAnimals = () => {
         AnimalRepository.getAll().then(data => petAnimals(data))
     }
+
+    useEffect(() => {
+        petAnimals(searchResults)
+    }, [searchResults])
 
     useEffect(() => {
         OwnerRepository.getAllCustomers().then(updateOwners)
@@ -69,7 +73,7 @@ export const AnimalListComponent = (props) => {
 
             <ul className="animals">
                 {
-                    animals.map(anml =>
+                    animals?.map(anml =>
                         <Animal key={`animal--${anml.id}`} animal={anml}
                             animalOwners={animalOwners}
                             owners={owners}
