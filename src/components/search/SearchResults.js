@@ -15,7 +15,6 @@ export default () => {
                 <React.Fragment>
                     <h2>Matching Animals</h2>
                     <section className="animals">
-                        Display matching animals
                         <div>
                             <AnimalListComponent searchResults={location.state?.animals} />
                         </div>
@@ -32,7 +31,6 @@ export default () => {
                 <React.Fragment>
                     <h2>Matching Employees</h2>
                     <section className="employees">
-                        Display matching employees
                         <div>
                             <EmployeeList searchResults={location.state?.employees} />
                         </div>
@@ -49,7 +47,6 @@ export default () => {
                 <React.Fragment>
                     <h2>Matching Locations</h2>
                     <section className="locations">
-                        Display matching Locations
                         <div>
                             <LocationList searchResults={location.state?.locations} />
                         </div>
