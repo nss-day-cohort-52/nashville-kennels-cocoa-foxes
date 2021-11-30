@@ -6,6 +6,7 @@ import OwnerRepository from "../../repositories/OwnerRepository";
 import useSimpleAuth from "../../hooks/ui/useSimpleAuth";
 import useResourceResolver from "../../hooks/resource/useResourceResolver";
 import "./AnimalCard.css"
+import { get } from "http";
 
 export const Animal = ({ animal, syncAnimals,
     showTreatmentHistory, owners }) => {
@@ -135,8 +136,15 @@ export const Animal = ({ animal, syncAnimals,
                                 ? <button className="btn btn-warning mt-3 form-control small" onClick={() =>
                                     AnimalOwnerRepository
                                         .removeOwnersAndCaretakers(currentAnimal.id)
-                                        .then(() => {}) // Remove animal
-                                        .then(() => {}) // Get all animals
+                                        .then(() => {
+                                           AnimalRepository.delete(currentAnimal.id) 
+                                        }) // Remove animal
+                                        .then(() => {
+                                            AnimalRepository.getAll(animal)
+                                        }) // Get all animals
+                                        .then(() => {
+                                            history.push("/animals")
+                                        })
                                 }>Discharge</button>
                                 : ""
                         }
