@@ -5,6 +5,7 @@ import useResourceResolver from "../../hooks/resource/useResourceResolver";
 import useSimpleAuth from "../../hooks/ui/useSimpleAuth";
 import person from "./person.png"
 import "./Employee.css"
+import LocationRepository from "../../repositories/LocationRepository";
 
 
 export default ({ employee }) => {
@@ -32,8 +33,8 @@ export default ({ employee }) => {
     }, [])
 
     useEffect(() => {
-        if (resource?.employeeLocations?.length > 0) {
-            markLocation(resource.employeeLocations[0])
+        if (resource?.locations?.length > 0) {
+            markLocation(resource.locations[0])
         }
     }, [resource])
 
@@ -66,10 +67,10 @@ export default ({ employee }) => {
                     employeeId
                         ? <>
                             <section>
-                                Caring for 0 animals
+                                Caring for {resource?.animals?.length} animals
                             </section>
                             <section>
-                                Working at unknown location
+                                Working at {location?.location?.name} location
                             </section>
                         </>
                         : ""
