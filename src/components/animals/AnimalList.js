@@ -25,8 +25,9 @@ export const AnimalListComponent = ({searchResults}) => {
         AnimalRepository.getAll().then(data => petAnimals(data))
     }
 
+    const [searchedAnimals, updatedAnimals] = useState([])
     useEffect(() => {
-        petAnimals(searchResults)
+        updatedAnimals(searchResults)
     }, [searchResults])
 
     useEffect(() => {
@@ -51,6 +52,42 @@ export const AnimalListComponent = ({searchResults}) => {
 
         return () => window.removeEventListener("keyup", handler)
     }, [toggleDialog, modalIsOpen])
+
+
+    if (searchedAnimals?.length > 0) {
+        return (
+            <>
+                <AnimalDialog toggleDialog={toggleDialog} animal={currentAnimal} />
+    
+    
+                {
+                    getCurrentUser().employee
+                        ? ""
+                        : <div className="centerChildren btn--newResource">
+                            <button type="button"
+                                className="btn btn-success "
+                                onClick={() => { history.push("/animals/new") }}>
+                                Register Animal
+                            </button>
+                        </div>
+                }
+    
+    
+                <ul className="animals">
+                    {
+                        searchedAnimals?.map(anml =>
+                            <Animal key={`animal--${anml.id}`} animal={anml}
+                                animalOwners={animalOwners}
+                                owners={owners}
+                                syncAnimals={syncAnimals}
+                                setAnimalOwners={setAnimalOwners}
+                                showTreatmentHistory={showTreatmentHistory}
+                            />)
+                    }
+                </ul>
+            </>
+        )
+    } else {
 
 
     return (
@@ -85,4 +122,6 @@ export const AnimalListComponent = ({searchResults}) => {
             </ul>
         </>
     )
+}
+
 }

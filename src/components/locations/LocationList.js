@@ -6,19 +6,28 @@ import "./LocationList.css"
 
 export const LocationList = ({searchResults}) => {
     const [ locations, updateLocations ] = useState([])
+    const [searchedLocations, setSearchedLocations] = useState([])
 
     useEffect(() => {
         LocationRepository.getAll().then(updateLocations)
     }, [])
 
     useEffect(() => {
-        updateLocations(searchResults)
+        setSearchedLocations(searchResults)
     },[searchResults])
 
-
-    return (
-        <div className="locations">
-            {locations?.map(l => <Location key={l.id} location={l} />)}
-        </div>
-    )
+    if (searchedLocations?.length > 0) {
+        return (
+            <div className="locations">
+                {searchedLocations?.map(l => <Location key={l.id} location={l} />)}
+            </div>
+        )
+    } else {
+        
+        return (
+            <div className="locations">
+                {locations?.map(l => <Location key={l.id} location={l} />)}
+            </div>
+        )
+    }
 }
