@@ -22,6 +22,6 @@ export default {
         return await fetchIt(`${Settings.remoteURL}/employeeLocations`, "POST", JSON.stringify(rel))
     },
     async getAll() {
-        return await fetchIt(`${Settings.remoteURL}/users?employee=true&_embed=employeeLocations`)
+        return await fetchIt(`${Settings.remoteURL}/users?employee=true&_embed=employeeLocations&_embed=animalCaretakers`)
     }
 }
