@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { Link, useParams } from "react-router-dom"
+import { Link, useParams, useHistory } from "react-router-dom"
 import EmployeeRepository from "../../repositories/EmployeeRepository";
 import useResourceResolver from "../../hooks/resource/useResourceResolver";
 import useSimpleAuth from "../../hooks/ui/useSimpleAuth";
@@ -14,6 +14,13 @@ export default ({ employee }) => {
     const { employeeId } = useParams()
     const { getCurrentUser } = useSimpleAuth()
     const { resolveResource, resource } = useResourceResolver()
+    const history = useHistory()
+    const [isEmployee, setAuth] = useState(false)
+
+    useEffect(() => {
+        setAuth(getCurrentUser().employee)
+        resolveResource(employee, employeeId, EmployeeRepository.get)
+    }, [])
 
     useEffect(() => {
         if (employeeId) {
@@ -27,6 +34,13 @@ export default ({ employee }) => {
             markLocation(resource.employeeLocations[0])
         }
     }, [resource])
+
+    const fireEmployee = (id) => {
+        EmployeeRepository
+            .delete(id)
+            .then(EmployeeRepository.getAll)
+            .then(() => { history.push("/employees") })
+    }
 
     return (
         <article className={classes}>
@@ -60,7 +74,11 @@ export default ({ employee }) => {
                 }
 
                 {
-                    <button className="btn--fireEmployee" onClick={() => {}}>Fire</button>
+                    employeeId
+                        ? isEmployee
+                            ? <button className="btn--fireEmployee" onClick={() => { fireEmployee(resource.id) }}>Fire</button>
+                            : ""
+                        : ""
                 }
 
             </section>
