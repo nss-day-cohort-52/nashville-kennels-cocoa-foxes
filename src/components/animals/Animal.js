@@ -110,25 +110,6 @@ export const Animal = ({ animal, syncAnimals,
                                     : null
                             }
 
-                            {/* {
-                                <section>
-                                    <h6>Add Treatment:</h6>
-                                    <form>
-                                    <input id="treatment"></input>
-
-                                    <button onClick={() => {
-                                        const treatments = get('http://localhost:8088/treatments')
-                                        request.withBody({
-                                            "id": treatments.length + 1,
-                                            "animalId": currentAnimal.id,
-                                            "timestamp": Date.now(),
-                                            "description": getElementById('treatment').value
-                                        })
-                                    }}>Submit</button>
-                                    </form>
-                                </section>
-                            } */}
-
 
                         {
                             detailsOpen && "treatments" in currentAnimal
