@@ -159,7 +159,8 @@ export const Animal =
                                     ? <select defaultValue=""
                                         name="owner"
                                         className="form-control small"
-                                        onChange={(event) => { AnimalOwnerRepository.assignOwner(currentAnimal.id, parseInt(event.target.value)) }} >
+
+                                        onChange={(event) => { AnimalOwnerRepository.assignOwner(currentAnimal.id, parseInt(event.target.value)).then(() => {getPeople()}) }} >
                                         <option value="">
                                             Select {myOwners.length === 1 ? "another" : "an"} owner
                                         </option>
