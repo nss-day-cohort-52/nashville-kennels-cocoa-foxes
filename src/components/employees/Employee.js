@@ -23,7 +23,7 @@ export default ({ employee }) => {
         resolveResource(employee, employeeId, EmployeeRepository.get)
     }, [])
 
-//resolveResouece takes three arguments = property, parameter, getter
+    //resolveResouece takes three arguments = property, parameter, getter
 
     useEffect(() => {
         if (employeeId) {
@@ -37,8 +37,8 @@ export default ({ employee }) => {
             markLocation(resource.locations[0])
         }
     }, [resource])
-    
-    useEffect(()=>{
+
+    useEffect(() => {
         setCount(resource?.animalCaretakers?.length)
     })
 
@@ -65,10 +65,10 @@ export default ({ employee }) => {
                                 {resource.name}
                             </Link>
 
-                        <section>Caring for {animalCount} animals</section></>
+                                <section>Caring for {animalCount} animals</section></>
                     }
                 </h5>
-                
+
                 {
                     employeeId
                         ? <>
@@ -76,7 +76,15 @@ export default ({ employee }) => {
                                 Caring for {resource?.animals?.length} animals
                             </section>
                             <section>
-                                Working at {location?.location?.name} location
+                                Working at {
+                                    <Link className="card-link"
+                                        to={{
+                                            pathname: `/locations/${location?.location?.id}`
+                                        }}>
+                                        {location?.location?.name}
+                                    </Link>
+
+                                } location
                             </section>
                         </>
                         : ""
