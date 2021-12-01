@@ -26,7 +26,7 @@ export default {
             })
     },
     async searchByName(query) {
-        return await fetchIt(`${Settings.remoteURL}/animals?_expand=employee&_sort=employee.id&_embed=treatments&_expand=location&name_like=${query}`)
+        return await fetchIt(`${Settings.remoteURL}/animals?_expand=employee&_sort=employee.id&_embed=treatments&_embed=animalOwners&_expand=location&name_like=${query}`)
     },
     async delete(id) {
         return await fetchIt(`${Settings.remoteURL}/animals/${id}`, "DELETE")
