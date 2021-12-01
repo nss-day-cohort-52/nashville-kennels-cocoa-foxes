@@ -2,9 +2,12 @@ import React from "react"
 import { Link } from "react-router-dom"
 import locationImage from "./location.png"
 import "./Location.css"
+import { useEffect, useState } from "react"
+import LocationRepository from "../../repositories/LocationRepository";
 
 
 export default ({location}) => {
+
     return (
         <article className="card location" style={{ width: `18rem` }}>
             <section className="card-body">
@@ -20,10 +23,10 @@ export default ({location}) => {
                 </h5>
             </section>
             <section>
-                Total animals
+                Total animals: {location.animals?.length}
             </section>
             <section>
-                Total locations
+                Total employees: {location.employeeLocations?.length}
             </section>
         </article>
     )

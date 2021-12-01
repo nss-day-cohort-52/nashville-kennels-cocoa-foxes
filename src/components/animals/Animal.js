@@ -99,7 +99,7 @@ export const Animal = ({ animal, syncAnimals,
                                     ? <select defaultValue=""
                                         name="owner"
                                         className="form-control small"
-                                        onChange={() => {}} >
+                                        onChange={() => { }} >
                                         <option value="">
                                             Select {myOwners.length === 1 ? "another" : "an"} owner
                                         </option>
@@ -111,47 +111,47 @@ export const Animal = ({ animal, syncAnimals,
                             }
 
 
-                            {
-                                detailsOpen && "treatments" in currentAnimal
-                                    ? <div className="small">
-                                        <h6>Treatment History</h6>
-                                        {
-                                            currentAnimal.treatments.map(t => (
-                                                <div key={t.id}>
-                                                    <p style={{ fontWeight: "bolder", color: "grey" }}>
-                                                        {new Date(t.timestamp).toLocaleString("en-US")}
-                                                    </p>
-                                                    <p>{t.description}</p>
-                                                </div>
-                                            ))
-                                        }
-                                    </div>
-                                    : ""
-                            }
-
-                        </section>
-
                         {
-                            isEmployee
-                                ? <button className="btn btn-warning mt-3 form-control small" onClick={() =>
-                                    AnimalOwnerRepository
-                                        .removeOwnersAndCaretakers(currentAnimal.id)
-                                        .then(() => {
-                                           AnimalRepository.delete(currentAnimal.id) 
-                                        }) // Remove animal
-                                        .then(() => {
-                                            syncAnimals()
-                                        }) // Get all animals
-                                        .then(() => {
-                                          
-                                        })
-                                }>Discharge</button>
+                            detailsOpen && "treatments" in currentAnimal
+                                ? <div className="small">
+                                    <h6>Treatment History</h6>
+                                    {
+                                        currentAnimal.treatments.map(t => (
+                                            <div key={t.id}>
+                                                <p style={{ fontWeight: "bolder", color: "grey" }}>
+                                                    {new Date(t.timestamp).toLocaleString("en-US")}
+                                                </p>
+                                                <p>{t.description}</p>
+                                            </div>
+                                        ))
+                                    }
+                                </div>
                                 : ""
                         }
 
-                    </details>
-                </div>
-            </li>
+                    </section>
+
+                    {
+                        isEmployee
+                            ? <button className="btn btn-warning mt-3 form-control small" onClick={() =>
+                                AnimalOwnerRepository
+                                    .removeOwnersAndCaretakers(currentAnimal.id)
+                                    .then(() => {
+                                        AnimalRepository.delete(currentAnimal.id)
+                                    }) // Remove animal
+                                    .then(() => {
+                                        syncAnimals()
+                                    }) // Get all animals
+                                    .then(() => {
+
+                                    })
+                            }>Discharge</button>
+                            : ""
+                    }
+
+                </details>
+            </div>
+        </li>
         </>
     )
 }

@@ -56,5 +56,6 @@ export default {
             "PUT",
             JSON.stringify(editedAnimal)
         )
-    }
+    },
+
 }
