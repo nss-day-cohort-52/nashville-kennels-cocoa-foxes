@@ -19,6 +19,7 @@ export const Animal = ({ animal, syncAnimals,
     const history = useHistory()
     const { animalId } = useParams()
     const { resolveResource, resource: currentAnimal } = useResourceResolver()
+    const [description, setDescription] = useState('')
 
     useEffect(() => {
         setAuth(getCurrentUser().employee)
@@ -52,6 +53,7 @@ export const Animal = ({ animal, syncAnimals,
                 })
         }
     }, [animalId])
+
 
     return (
         <>
@@ -91,7 +93,7 @@ export const Animal = ({ animal, syncAnimals,
 
                             <h6>Owners</h6>
                             <span className="small">
-                                Owned by { myOwners.map((owner) => {
+                                Owned by {myOwners.map((owner) => {
                                     return owner?.user?.name
                                 }).join(" and ")}
                             </span>
@@ -112,48 +114,75 @@ export const Animal = ({ animal, syncAnimals,
                                     : null
                             }
 
+                            {
+                                isEmployee
+                                    ? <> <h6>Add Treatment:</h6><input onChange={(event) => {
+                                        setDescription(event.target.value)
+                                    }
+                                    }></input> <button onClick={() => {
+                                        const fetchOptions = {
+                                            method: "POST",
+                                            headers: {
+                                                "Content-Type": "application/json"
+                                            },
+                                            body: JSON.stringify({
+                                                'animalId': currentAnimal.id,
+                                                'timestamp': Date.now(),
+                                                'description': description
+                                            })
+                                        }
+
+
+                                        return fetch(`http://localhost:8088/treatments`, fetchOptions)
+                                            .then(response => response.json())
+                                            .then(() => {
+                                            })
+                            }}>submit</button> </>
+                                    : ""
+                            }
+
+
+                            {
+                                detailsOpen && "treatments" in currentAnimal
+                                    ? <div className="small">
+                                        <h6>Treatment History</h6>
+                                        {
+                                            currentAnimal.treatments.map(t => (
+                                                <div key={t.id}>
+                                                    <p style={{ fontWeight: "bolder", color: "grey" }}>
+                                                        {new Date(t.timestamp).toLocaleString("en-US")}
+                                                    </p>
+                                                    <p>{t.description}</p>
+                                                </div>
+                                            ))
+                                        }
+                                    </div>
+                                    : ""
+                            }
+
+                        </section>
 
                         {
-                            detailsOpen && "treatments" in currentAnimal
-                                ? <div className="small">
-                                    <h6>Treatment History</h6>
-                                    {
-                                        currentAnimal.treatments.map(t => (
-                                            <div key={t.id}>
-                                                <p style={{ fontWeight: "bolder", color: "grey" }}>
-                                                    {new Date(t.timestamp).toLocaleString("en-US")}
-                                                </p>
-                                                <p>{t.description}</p>
-                                            </div>
-                                        ))
-                                    }
-                                </div>
+                            isEmployee
+                                ? <button className="btn btn-warning mt-3 form-control small" onClick={() =>
+                                    AnimalOwnerRepository
+                                        .removeOwnersAndCaretakers(currentAnimal.id)
+                                        .then(() => {
+                                            AnimalRepository.delete(currentAnimal.id)
+                                        }) // Remove animal
+                                        .then(() => {
+                                            syncAnimals()
+                                        }) // Get all animals
+                                        .then(() => {
+
+                                        })
+                                }>Discharge</button>
                                 : ""
                         }
 
-                    </section>
-
-                    {
-                        isEmployee
-                            ? <button className="btn btn-warning mt-3 form-control small" onClick={() =>
-                                AnimalOwnerRepository
-                                    .removeOwnersAndCaretakers(currentAnimal.id)
-                                    .then(() => {
-                                        AnimalRepository.delete(currentAnimal.id)
-                                    }) // Remove animal
-                                    .then(() => {
-                                        syncAnimals()
-                                    }) // Get all animals
-                                    .then(() => {
-
-                                    })
-                            }>Discharge</button>
-                            : ""
-                    }
-
-                </details>
-            </div>
-        </li>
+                    </details>
+                </div>
+            </li>
         </>
     )
 }
