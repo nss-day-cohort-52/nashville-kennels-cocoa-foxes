@@ -6,6 +6,7 @@ import "./EmployeeList.css"
 
 export default ({searchResults}) => {
     const [emps, setEmployees] = useState([])
+
     const [searchedEmployees, setSearchedEmployees] = useState([])
 
     useEffect(

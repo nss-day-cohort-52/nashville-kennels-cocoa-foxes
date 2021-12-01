@@ -23,7 +23,7 @@ export default ({ employee }) => {
         resolveResource(employee, employeeId, EmployeeRepository.get)
     }, [])
 
-//resolveResouece takes three arguments = property, parameter, getter
+    //resolveResouece takes three arguments = property, parameter, getter
 
     useEffect(() => {
         if (employeeId) {
@@ -37,6 +37,10 @@ export default ({ employee }) => {
             markLocation(resource.locations[0])
         }
     }, [resource])
+
+    useEffect(() => {
+        setCount(resource?.animalCaretakers?.length)
+    })
 
     const fireEmployee = (id) => {
         EmployeeRepository
@@ -53,7 +57,7 @@ export default ({ employee }) => {
                     {
                         employeeId
                             ? resource.name
-                            : <Link className="card-link"
+                            : <> <Link className="card-link"
                                 to={{
                                     pathname: `/employees/${resource.id}`,
                                     state: { employee: resource }
@@ -61,8 +65,10 @@ export default ({ employee }) => {
                                 {resource.name}
                             </Link>
 
+                                <section>Caring for {animalCount} animals</section></>
                     }
                 </h5>
+
                 {
                     employeeId
                         ? <>
@@ -70,7 +76,15 @@ export default ({ employee }) => {
                                 Caring for {resource?.animals?.length} animals
                             </section>
                             <section>
-                                Working at {location?.location?.name} location
+                                Working at {
+                                    <Link className="card-link"
+                                        to={{
+                                            pathname: `/locations/${location?.location?.id}`
+                                        }}>
+                                        {location?.location?.name}
+                                    </Link>
+
+                                } location
                             </section>
                         </>
                         : ""
