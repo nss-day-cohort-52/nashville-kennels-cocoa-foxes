@@ -12,7 +12,7 @@ import "./AnimalList.css"
 import "./cursor.css"
 
 
-export const AnimalListComponent = (props) => {
+export const AnimalListComponent = ({searchResults}) => {
     const [animals, petAnimals] = useState([])
     const [animalOwners, setAnimalOwners] = useState([])
     const [owners, updateOwners] = useState([])
@@ -24,6 +24,11 @@ export const AnimalListComponent = (props) => {
     const syncAnimals = () => {
         AnimalRepository.getAll().then(data => petAnimals(data))
     }
+
+    const [searchedAnimals, updatedAnimals] = useState([])
+    useEffect(() => {
+        updatedAnimals(searchResults)
+    }, [searchResults])
 
     useEffect(() => {
         OwnerRepository.getAllCustomers().then(updateOwners)
@@ -49,6 +54,42 @@ export const AnimalListComponent = (props) => {
     }, [toggleDialog, modalIsOpen])
 
 
+    if (searchedAnimals?.length > 0) {
+        return (
+            <>
+                <AnimalDialog toggleDialog={toggleDialog} animal={currentAnimal} />
+    
+    
+                {
+                    getCurrentUser().employee
+                        ? ""
+                        : <div className="centerChildren btn--newResource">
+                            <button type="button"
+                                className="btn btn-success "
+                                onClick={() => { history.push("/animals/new") }}>
+                                Register Animal
+                            </button>
+                        </div>
+                }
+    
+    
+                <ul className="animals">
+                    {
+                        searchedAnimals?.map(anml =>
+                            <Animal key={`animal--${anml.id}`} animal={anml}
+                                animalOwners={animalOwners}
+                                owners={owners}
+                                syncAnimals={syncAnimals}
+                                setAnimalOwners={setAnimalOwners}
+                                showTreatmentHistory={showTreatmentHistory}
+                            />)
+                    }
+                </ul>
+            </>
+        )
+    } else {
+
+
     return (
         <>
             <AnimalDialog toggleDialog={toggleDialog} animal={currentAnimal} />
@@ -69,7 +110,7 @@ export const AnimalListComponent = (props) => {
 
             <ul className="animals">
                 {
-                    animals.map(anml =>
+                    animals?.map(anml =>
                         <Animal key={`animal--${anml.id}`} animal={anml}
                             animalOwners={animalOwners}
                             owners={owners}
@@ -81,4 +122,6 @@ export const AnimalListComponent = (props) => {
             </ul>
         </>
     )
+}
+
 }
