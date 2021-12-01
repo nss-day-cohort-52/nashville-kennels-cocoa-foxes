@@ -7,6 +7,7 @@ import useSimpleAuth from "../../hooks/ui/useSimpleAuth";
 import useResourceResolver from "../../hooks/resource/useResourceResolver";
 import "./AnimalCard.css"
 import { userInfo } from "os";
+import EmployeeRepository from "../../repositories/EmployeeRepository";
 
 export const Animal = 
 // the name of this component, React is a component based app, with small reusable bits of code called components
@@ -123,14 +124,16 @@ export const Animal =
                         <section>
                             <h6>Caretaker(s)</h6>
                             <span className="small">
-                                Unknown
+                                Cared for by { myCaretakers.map((caretaker) => {
+                                    return caretaker?.user?.name
+                                }).join(" and ")}
                             </span>
                                 {
                                      myCaretakers.length < 2
                                      ? <select defaultValue=""
-                                         name="Caretaker"
+                                         name="caretaker"
                                          className="form-control small"
-                                         onChange={() => {}} >
+                                         onChange={(event) => {EmployeeRepository.assignEmployee(currentAnimal.id, parseInt(event.target.value))}} >
                                          <option value="">
                                              Select {myCaretakers.length === 1 ? "another" : "a"} caretaker
                                          </option>
@@ -169,15 +172,6 @@ export const Animal =
 
 
                         {
-<<<<<<< HEAD
-                            isEmployee
-                                ? <button className="btn btn-warning mt-3 form-control small" onClick={() =>
-                                    AnimalOwnerRepository
-                                        .removeOwnersAndCaretakers(currentAnimal.id)
-                                        .then(() => {}) // Remove animal
-                                        .then(() => {}) // Get all animals
-                                }>Discharge</button>
-=======
                             detailsOpen && "treatments" in currentAnimal
                                 ? <div className="small">
                                     <h6>Treatment History</h6>
@@ -192,7 +186,6 @@ export const Animal =
                                         ))
                                     }
                                 </div>
->>>>>>> main
                                 : ""
                         }
 

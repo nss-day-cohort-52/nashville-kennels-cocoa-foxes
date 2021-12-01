@@ -18,8 +18,16 @@ export default {
     async addEmployee(employee) {
         return await fetchIt(`${Settings.remoteURL}/users`, "POST", JSON.stringify(employee))
     },
-    async assignEmployee(rel) {
-        return await fetchIt(`${Settings.remoteURL}/employeeLocations`, "POST", JSON.stringify(rel))
+    async assignEmployee(animalId, userId) {
+        const e = await fetch(`${Settings.remoteURL}/animalCaretakers`, {
+            "method": "POST",
+            "headers": {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("kennel_token")}`
+            },
+            "body": JSON.stringify({ animalId, userId })
+        })
+        return await e.json()
     },
     async getAll() {
         return await fetchIt(`${Settings.remoteURL}/users?employee=true&_embed=employeeLocations&_embed=animalCaretakers`)
