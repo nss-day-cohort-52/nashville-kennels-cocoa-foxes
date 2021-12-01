@@ -36,16 +36,8 @@ export const NavBar = () => {
                 .then(animals => {
                     if (getCurrentUser().employee) {
                         foundItems.animals = animals
+                    } 
 
-                    } else {
-                        foundItems.animals = animals.filter((animal) => {
-                            let currentUserOwner = animal.animalOwners.find(owner => owner.userId === getCurrentUser().id)
-                            if (currentUserOwner) {
-                                return animal
-                            }
-                        }
-                        )
-                    }
                     setTerms("")
                     history.push({
                         pathname: "/search",
