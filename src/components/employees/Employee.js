@@ -23,6 +23,8 @@ export default ({ employee }) => {
         resolveResource(employee, employeeId, EmployeeRepository.get)
     }, [])
 
+//resolveResouece takes three arguments = property, parameter, getter
+
     useEffect(() => {
         if (employeeId) {
             defineClasses("card employee--single")

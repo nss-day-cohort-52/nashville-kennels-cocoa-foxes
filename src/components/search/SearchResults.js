@@ -1,5 +1,8 @@
 import React from "react"
 import { useLocation } from "react-router-dom";
+import { AnimalListComponent } from "../animals/AnimalList";
+import EmployeeList from "../employees/EmployeeList";
+import { LocationList } from "../locations/LocationList";
 import "./SearchResults.css"
 
 
@@ -7,12 +10,15 @@ export default () => {
     const location = useLocation()
 
     const displayAnimals = () => {
-        if (location.state?.animals.length) {
+        if (location.state?.animals.length > 0) {
             return (
                 <React.Fragment>
                     <h2>Matching Animals</h2>
                     <section className="animals">
-                        Display matching animals
+                        <div>
+                            <AnimalListComponent searchResults={location.state.animals} />
+                        </div>
+
                     </section>
                 </React.Fragment>
             )
@@ -20,12 +26,15 @@ export default () => {
     }
 
     const displayEmployees = () => {
-        if (location.state?.employees.length) {
+        if (location.state?.employees.length > 0) {
             return (
                 <React.Fragment>
                     <h2>Matching Employees</h2>
                     <section className="employees">
-                        Display matching employees
+                        <div>
+                            <EmployeeList searchResults={location.state.employees} />
+                        </div>
+
                     </section>
                 </React.Fragment>
             )
@@ -33,12 +42,14 @@ export default () => {
     }
 
     const displayLocations = () => {
-        if (location.state?.locations.length) {
+        if (location.state?.locations.length > 0) {
             return (
                 <React.Fragment>
                     <h2>Matching Locations</h2>
                     <section className="locations">
-                        Display matching locations
+                        <div>
+                            <LocationList searchResults={location.state.locations} />
+                        </div>
                     </section>
                 </React.Fragment>
             )

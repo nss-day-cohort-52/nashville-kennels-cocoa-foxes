@@ -4,9 +4,10 @@ import EmployeeRepository from "../../repositories/EmployeeRepository"
 import "./EmployeeList.css"
 
 
-export default () => {
+export default ({searchResults}) => {
     const [emps, setEmployees] = useState([])
-    
+
+    const [searchedEmployees, setSearchedEmployees] = useState([])
 
     useEffect(
         () => {
@@ -14,13 +15,34 @@ export default () => {
         }, []
     )
 
-    return (
-        <>
-            <div className="employees">
-                {
-                    emps.map(a => <Employee key={a.id} employee={a} />)
-                }
-            </div>
-        </>
+    useEffect(
+        () => {
+            setSearchedEmployees(searchResults)
+        }, [searchResults]
     )
+
+    if (searchedEmployees?.length > 0) {
+        return (
+            <>
+                <div className="employees">
+                    {
+                        searchedEmployees?.map(a => <Employee key={a.id} employee={a} />)
+                    }
+                </div>
+            </>
+        )
+    } else {
+        
+        return (
+            <>
+                <div className="employees">
+                    {
+                        emps?.map(a => <Employee key={a.id} employee={a} />)
+                    }
+                </div>
+            </>
+        )
+
+    }
+
 }
