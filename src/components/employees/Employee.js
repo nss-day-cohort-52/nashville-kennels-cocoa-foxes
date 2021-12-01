@@ -35,6 +35,10 @@ export default ({ employee }) => {
             markLocation(resource.locations[0])
         }
     }, [resource])
+    
+    useEffect(()=>{
+        setCount(resource?.animalCaretakers?.length)
+    })
 
     const fireEmployee = (id) => {
         EmployeeRepository
@@ -51,7 +55,7 @@ export default ({ employee }) => {
                     {
                         employeeId
                             ? resource.name
-                            : <Link className="card-link"
+                            : <> <Link className="card-link"
                                 to={{
                                     pathname: `/employees/${resource.id}`,
                                     state: { employee: resource }
@@ -59,8 +63,10 @@ export default ({ employee }) => {
                                 {resource.name}
                             </Link>
 
+                        <section>Caring for {animalCount} animals</section></>
                     }
                 </h5>
+                
                 {
                     employeeId
                         ? <>

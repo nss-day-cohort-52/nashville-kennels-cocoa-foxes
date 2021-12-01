@@ -6,6 +6,7 @@ import "./EmployeeList.css"
 
 export default () => {
     const [emps, setEmployees] = useState([])
+    
 
     useEffect(
         () => {
