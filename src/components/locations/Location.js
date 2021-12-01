@@ -26,7 +26,7 @@ export default ({location}) => {
                 Total animals: {location.animals?.length}
             </section>
             <section>
-                Total locations: {location.employeeLocations?.length}
+                Total employees: {location.employeeLocations?.length}
             </section>
         </article>
     )
