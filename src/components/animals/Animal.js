@@ -27,6 +27,10 @@ export const Animal = ({ animal, syncAnimals,
     }, [])
 
     useEffect(() => {
+        resolveResource(animal, animalId, AnimalRepository.get)
+    }, [animal])
+
+    useEffect(() => {
         if (owners) {
             registerOwners(owners)
         }
@@ -116,26 +120,21 @@ export const Animal = ({ animal, syncAnimals,
 
                             {
                                 isEmployee
-                                    ? <> <h6>Add Treatment:</h6><input onChange={(event) => {
+                                    ? <> <h6>Add Treatment:</h6><input id="treatment" value={description} onChange={(event) => {
                                         setDescription(event.target.value)
                                     }
                                     }></input> <button onClick={() => {
-                                        const fetchOptions = {
-                                            method: "POST",
-                                            headers: {
-                                                "Content-Type": "application/json"
-                                            },
-                                            body: JSON.stringify({
-                                                'animalId': currentAnimal.id,
-                                                'timestamp': Date.now(),
-                                                'description': description
-                                            })
-                                        }
-
-
-                                        return fetch(`http://localhost:8088/treatments`, fetchOptions)
-                                            .then(response => response.json())
+                                        
+                                        AnimalRepository.updateTreatment({
+                                            'animalId': currentAnimal.id,
+                                            'timestamp': Date.now(),
+                                            'description': description
+                                        })
                                             .then(() => {
+                                                syncAnimals()
+                                            })
+                                            .then(() => {
+                                                setDescription('')
                                             })
                             }}>submit</button> </>
                                     : ""
@@ -155,6 +154,7 @@ export const Animal = ({ animal, syncAnimals,
                                                     <p>{t.description}</p>
                                                 </div>
                                             ))
+                                            
                                         }
                                     </div>
                                     : ""
