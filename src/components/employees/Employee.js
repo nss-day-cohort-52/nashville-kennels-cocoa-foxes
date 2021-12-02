@@ -78,6 +78,7 @@ export default ({ employee }) => {
             EmployeeRepository.assignLocation(locationObj)
             resolveResource(employee, employeeId, EmployeeRepository.get)
         }
+        resolveResource(employee, employeeId, EmployeeRepository.get)
     }
 
     return (
