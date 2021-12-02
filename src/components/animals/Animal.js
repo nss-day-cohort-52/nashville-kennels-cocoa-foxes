@@ -131,7 +131,9 @@ export const Animal = ({ animal, syncAnimals,
                                             'description': description
                                         })
                                             .then(() => {
-                                                syncAnimals()
+                                                if (!animalId) {
+                                                    syncAnimals()
+                                                } 
                                             })
                                             .then(() => {
                                                 setDescription('')
