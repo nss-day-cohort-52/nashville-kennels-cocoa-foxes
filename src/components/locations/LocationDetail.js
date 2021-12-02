@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom"
 import { OxfordList } from "../../hooks/string/OxfordList.tsx"
+import AnimalRepository from "../../repositories/AnimalRepository";
 import LocationRepository from "../../repositories/LocationRepository"
 import "./Location.css"
 
@@ -13,10 +14,16 @@ export default () => {
 
     const { locationId } = useParams()
 
-
+    useEffect(() => {
+        AnimalRepository.get(animalId).then(setAnimals)
+    }, [animals]
+    )
+    
     useEffect(() => {
        LocationRepository.get(locationId).then(set)
     }, [locationId])
+
+
 
     return (
         <>
