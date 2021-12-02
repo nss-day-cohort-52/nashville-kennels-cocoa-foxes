@@ -77,8 +77,6 @@ export default ({ employee }) => {
         if (!existingEmployeeLocation) {
             EmployeeRepository.assignLocation(locationObj)
             resolveResource(employee, employeeId, EmployeeRepository.get)
-        } else {
-            window.alert("Employee is already assigned to this location")
         }
     }
 
