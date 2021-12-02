@@ -69,6 +69,17 @@ export const Animal =
         }
     }, [owners])
 
+
+    const getCare = () => {
+        return EmployeeRepository
+            .getCaretakersByAnimal(currentAnimal.id)
+            .then(care => setCare(care))
+    }
+
+    useEffect(() => {
+        getCare()
+    },[currentAnimal] )
+
     const getPeople = () => {
         return AnimalOwnerRepository
             .getOwnersByAnimal(currentAnimal.id)
@@ -78,6 +89,18 @@ export const Animal =
     useEffect(() => {
         getPeople()
     }, [currentAnimal])
+
+    useEffect(() => {
+        if (animalId) {
+            defineClasses("card animal--single")
+            setDetailsOpen(true)
+
+            EmployeeRepository.getCaretakersByAnimal(animalId).then(d => setCare(d))
+                .then(() => {
+                        EmployeeRepository.getAllCaretakers().then(registerCaretakers)
+                })
+        }
+    }, [animalId])
 
     useEffect(() => {
         if (animalId) {
@@ -124,8 +147,8 @@ export const Animal =
                         <section>
                             <h6>Caretaker(s)</h6>
                             <span className="small">
-                                Cared for by { myCaretakers.map((caretaker) => {
-                                    return caretaker?.user?.name
+                                Cared for by { myCaretakers.slice(0 ,2).map((employee) => {
+                                    return employee?.user?.name
                                 }).join(" and ")}
                             </span>
                                 {

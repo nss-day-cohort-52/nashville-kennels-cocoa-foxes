@@ -18,6 +18,11 @@ export default {
     async addEmployee(employee) {
         return await fetchIt(`${Settings.remoteURL}/users`, "POST", JSON.stringify(employee))
     },
+
+    async getCaretakersByAnimal (animalId) {
+        const e = await fetch(`${Settings.remoteURL}/animalCaretakers?animalId=${animalId}&_expand=user`)
+        return await e.json()
+    },
     async assignEmployee(animalId, userId) {
         const e = await fetch(`${Settings.remoteURL}/animalCaretakers`, {
             "method": "POST",
