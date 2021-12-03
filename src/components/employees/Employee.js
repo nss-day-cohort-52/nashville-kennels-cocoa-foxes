@@ -22,8 +22,8 @@ export default ({ employee }) => {
 
     useEffect(() => {
         EmployeeRepository.getEmployeeLocations()
-        .then((res) => setEmployeeLocations(res))
-    },[])
+            .then((res) => setEmployeeLocations(res))
+    }, [])
 
     useEffect(() => {
         setAuth(getCurrentUser().employee)
@@ -73,7 +73,7 @@ export default ({ employee }) => {
             locationId: locationId,
         }
         const existingEmployeeLocation = employeeLocations.find(obj => obj.userId === parseInt(employeeId) && obj.locationId === locationId)
-        
+
         if (!existingEmployeeLocation) {
             EmployeeRepository.assignLocation(locationObj)
             resolveResource(employee, employeeId, EmployeeRepository.get)
@@ -127,17 +127,17 @@ export default ({ employee }) => {
                     employeeId
                         ? isEmployee
                             ? <><button className="btn--fireEmployee" onClick={() => { fireEmployee(resource.id) }}>Fire</button>
-                                <label for="location-select">Choose a location:</label>
                                 {resource?.locations?.length < 2
-                                    ? <select name="locations" id="location-select" onChange={(evt) => {
-                                        assignLocation(parseInt(evt.target.value))
+                                    ? <><label for="location-select">Choose a location:</label>
+                                        <select name="locations" id="location-select" onChange={(evt) => {
+                                            assignLocation(parseInt(evt.target.value))
                                         }} >
-                                        <option value="">--Please choose a location--</option>
-                                        {locations.map((loc) => (
-                                            <option key={loc.id} value={loc.id}>{loc.name}</option>
-                                        ))}
-                                    </select> :
-                                    ""}
+                                            <option value="">--Please choose a location--</option>
+                                            {locations.map((loc) => (
+                                                <option key={loc.id} value={loc.id}>{loc.name}</option>
+                                            ))}
+                                        </select></>
+                                    : ""}
                             </>
                             : ""
                         : ""
