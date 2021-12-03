@@ -1,6 +1,9 @@
-import React, { useState, useContext } from "react"
+import React, { useState, useContext, useEffect } from "react"
 import "./AnimalForm.css"
 import AnimalRepository from "../../repositories/AnimalRepository";
+import EmployeeRepository from "../../repositories/EmployeeRepository";
+import { useHistory } from "react-router";
+
 
 
 export default (props) => {
@@ -10,6 +13,13 @@ export default (props) => {
     const [employees, setEmployees] = useState([])
     const [employeeId, setEmployeeId] = useState(0)
     const [saveEnabled, setEnabled] = useState(false)
+    const history = useHistory()
+    const [locationId, setLocationId] = useState(0)
+
+    useEffect(() => {
+        EmployeeRepository.getAll()
+        .then(setEmployees)
+    },[])
 
     const constructNewAnimal = evt => {
         evt.preventDefault()
@@ -58,6 +68,25 @@ export default (props) => {
                     placeholder="Breed"
                 />
             </div>
+
+            <div className="form-group">
+                <label htmlFor="employee">Choose a Location</label>
+                <select
+                    defaultValue=""
+                    name="employee"
+                    id="employeeId"
+                    className="form-control"
+                    onChange={e => setEmployeeId(e.target.value)}
+                >
+                    <option value="">Select an employee</option>
+                    {employees.map(e => (
+                        <option key={e.id} id={e.id} value={e.id}>
+                            {e.name}
+                        </option>
+                    ))}
+                </select>
+            </div>
+
             <div className="form-group">
                 <label htmlFor="employee">Make appointment with caretaker</label>
                 <select
