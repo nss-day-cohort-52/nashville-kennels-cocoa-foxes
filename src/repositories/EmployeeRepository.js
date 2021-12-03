@@ -18,6 +18,11 @@ export default {
     async addEmployee(employee) {
         return await fetchIt(`${Settings.remoteURL}/users`, "POST", JSON.stringify(employee))
     },
+
+    async getCaretakersByAnimal (animalId) {
+        const e = await fetch(`${Settings.remoteURL}/animalCaretakers?animalId=${animalId}&_expand=user`)
+        return await e.json()
+    },
     async assignEmployee(animalId, userId) {
         const e = await fetch(`${Settings.remoteURL}/animalCaretakers`, {
             "method": "POST",
@@ -29,10 +34,18 @@ export default {
         })
         return await e.json()
     },
+
+    async getAllCaretakers() {
+        return await fetchIt(`${Settings.remoteURL}/users?employee=true`)
+    },
+
     async getAll() {
         return await fetchIt(`${Settings.remoteURL}/users?employee=true&_embed=employeeLocations&_embed=animalCaretakers`)
     },
     async assignLocation(rel) {
         return await fetchIt(`${Settings.remoteURL}/employeeLocations`, "POST", JSON.stringify(rel))
     },
+    async getEmployeeLocations() {
+        return await fetchIt(`${Settings.remoteURL}/employeeLocations`)
+    }
 }

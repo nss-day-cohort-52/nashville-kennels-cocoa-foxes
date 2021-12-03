@@ -13,11 +13,13 @@ import "./AnimalList.css"
 import "./cursor.css"
 
 
+
 export const AnimalListComponent = ({searchResults}) => {
     const [animals, petAnimals] = useState([])
     const [animalOwners, setAnimalOwners] = useState([])
     const [owners, updateOwners] = useState([])
     const [caretakers, setCare] =useState([])
+    const [animalCaretakers, setAnimalCaretakers] = useState([])
     const [currentAnimal, setCurrentAnimal] = useState({ treatments: [] })
     const { getCurrentUser } = useSimpleAuth()
     const history = useHistory()
@@ -37,6 +39,25 @@ export const AnimalListComponent = ({searchResults}) => {
                 }
                 )
                 petAnimals(customerAnimals)
+            }
+            
+        })
+    }
+
+    const combineAnimals = () => {
+        EmployeeRepository.getAll().then((data) => {
+            if (getCurrentUser().employee) {
+                petAnimals(data)
+
+            } else {
+                const caretakerAnimals = data.filter((animal) => {
+                    let currentUserCaretaker = animal.animalCaretakers.find(employee => employee.userId === getCurrentUser().id)
+                    if (currentUserCaretaker) {
+                        return animal
+                    }
+                }
+                )
+                petAnimals(caretakerAnimals)
             }
             
         })
@@ -64,6 +85,13 @@ useEffect(()=>{
         OwnerRepository.getAllCustomers().then(updateOwners)
         AnimalOwnerRepository.getAll().then(setAnimalOwners)
         syncAnimals()
+    }, [])
+
+
+    useEffect(() => {
+        EmployeeRepository.getAllCaretakers().then(setCare)
+        EmployeeRepository.getAll().then(setAnimalCaretakers)
+        combineAnimals()
     }, [])
 
     const showTreatmentHistory = animal => {
