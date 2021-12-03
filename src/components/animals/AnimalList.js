@@ -13,11 +13,13 @@ import "./AnimalList.css"
 import "./cursor.css"
 
 
+
 export const AnimalListComponent = ({searchResults}) => {
     const [animals, petAnimals] = useState([])
     const [animalOwners, setAnimalOwners] = useState([])
     const [owners, updateOwners] = useState([])
     const [caretakers, setCare] =useState([])
+    const [animalCaretakers, setAnimalCaretakers] = useState([])
     const [currentAnimal, setCurrentAnimal] = useState({ treatments: [] })
     const { getCurrentUser } = useSimpleAuth()
     const history = useHistory()
@@ -65,6 +67,7 @@ useEffect(()=>{
         AnimalOwnerRepository.getAll().then(setAnimalOwners)
         syncAnimals()
     }, [])
+
 
     const showTreatmentHistory = animal => {
         setCurrentAnimal(animal)

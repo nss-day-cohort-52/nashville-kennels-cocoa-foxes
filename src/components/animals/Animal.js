@@ -64,9 +64,27 @@ export const Animal =
         }, [caretakers])
         // useEffect Hook tells you that your component needs to do something after that render
 
+        const getCare = () => {
+            return EmployeeRepository
+                .getCaretakersByAnimal(currentAnimal.id)
+                .then(care => setCare(care))
+        }
+
+        useEffect(() => {
+            getCare()
+        }, [currentAnimal])
+
+        const getPeople = () => {
+            return AnimalOwnerRepository
+                .getOwnersByAnimal(currentAnimal.id)
+                .then(people => setPeople(people))
+        }
+
+
         useEffect(() => {
             resolveResource(animal, animalId, AnimalRepository.get)
         }, [animal])
+
 
         useEffect(() => {
             if (owners) {
@@ -74,11 +92,25 @@ export const Animal =
             }
         }, [owners])
 
-        const getPeople = () => {
-            return AnimalOwnerRepository
-                .getOwnersByAnimal(currentAnimal.id)
-                .then(people => setPeople(people))
-        }
+        useEffect(() => {
+            if (animalId) {
+                defineClasses("card animal--single")
+                setDetailsOpen(true)
+
+                EmployeeRepository.getCaretakersByAnimal(animalId).then(d => setCare(d))
+                    .then(() => {
+                        EmployeeRepository.getAllCaretakers().then(registerCaretakers)
+                    })
+            }
+        }, [animalId])
+
+        useEffect(() => {
+            if (animalId) {
+                defineClasses("card animal--single")
+                setDetailsOpen(true)
+            }
+        }, [])
+
 
         useEffect(() => {
             getPeople()
@@ -96,7 +128,6 @@ export const Animal =
                     })
             }
         }, [animalId])
-
 
         return (
             //returns JSX or whatever html you want to see in the browser
@@ -136,8 +167,8 @@ export const Animal =
                             <section>
                                 <h6>Caretaker(s)</h6>
                                 <span className="small">
-                                    Cared for by {myCaretakers.map((caretaker) => {
-                                        return caretaker?.user?.name
+                                    Cared for by {myCaretakers.slice(0, 2).map((employee) => {
+                                        return employee?.user?.name
                                     }).join(" and ")}
                                 </span>
                                 {
@@ -145,7 +176,7 @@ export const Animal =
                                         ? <select defaultValue=""
                                             name="caretaker"
                                             className="form-control small"
-                                            onChange={(event) => { EmployeeRepository.assignEmployee(currentAnimal.id, parseInt(event.target.value)) }} >
+                                            onChange={(event) => { EmployeeRepository.assignEmployee(currentAnimal.id, parseInt(event.target.value)).then(() => { getCare() }) }} >
                                             <option value="">
                                                 Select {myCaretakers.length === 1 ? "another" : "a"} caretaker
                                             </option>
@@ -156,7 +187,6 @@ export const Animal =
                                             }
                                         </select>
                                         : null
-
                                 }
 
                                 <h6>Owners</h6>
