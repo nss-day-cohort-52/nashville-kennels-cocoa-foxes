@@ -4,6 +4,8 @@ import AnimalRepository from "../../repositories/AnimalRepository";
 import EmployeeRepository from "../../repositories/EmployeeRepository";
 import { useHistory } from "react-router";
 import LocationRepository from "../../repositories/LocationRepository";
+import AnimalOwnerRepository from "../../repositories/AnimalOwnerRepository";
+import useSimpleAuth from "../../hooks/ui/useSimpleAuth";
 
 
 
@@ -17,9 +19,11 @@ export default (props) => {
     const history = useHistory()
     const [locationId, setLocationId] = useState(0)
     const [locations, setLocations] = useState([])
+    const { getCurrentUser } = useSimpleAuth()
 
     useEffect(() => {
-        setLocations(LocationRepository.getAll())
+        LocationRepository.getAll()
+            .then(setLocations)
     }, [])
 
     useEffect(() => {
@@ -38,13 +42,20 @@ export default (props) => {
             const animal = {
                 name: animalName,
                 breed: breed,
-                employeeId: eId,
                 locationId: locationId
             }
+            if (animalName && breed && employeeId && locationId) {
 
-            AnimalRepository.addAnimal(animal)
-                .then(() => setEnabled(true))
-                .then(() => props.history.push("/animals"))
+                AnimalRepository.addAnimal(animal)
+                .then((res) => {
+                    AnimalOwnerRepository.assignOwner(res.id, getCurrentUser().id)
+                    EmployeeRepository.assignEmployee(res.id, eId)
+                })
+                    .then(() => setEnabled(true))
+                    .then(() => history.push("/animals"))
+            } else {
+                window.alert("Please fill out all fields before submitting")
+            }
         }
     }
 
@@ -85,7 +96,7 @@ export default (props) => {
                     onChange={e => setLocationId(parseInt(e.target.value))}
                 >
                     <option value="">Choose a Location</option>
-                    {employees.map(l => (
+                    {locations.map(l => (
                         <option key={l.id} id={l.id} value={l.id}>
                             {l.name}
                         </option>
@@ -105,7 +116,10 @@ export default (props) => {
                         >
                             <option value="">Select an employee</option>
                             {employees.filter((employee) => {
-                                const matchingLocation = 
+                                const matchingLocation = employee?.employeeLocations?.find(location => location.locationId === locationId)
+                                if (matchingLocation) {
+                                    return employee
+                                }
                             }).map(e => (
                                 <option key={e.id} id={e.id} value={e.id}>
                                     {e.name}
