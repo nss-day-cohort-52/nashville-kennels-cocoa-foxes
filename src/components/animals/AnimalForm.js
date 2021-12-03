@@ -1,6 +1,12 @@
-import React, { useState, useContext } from "react"
+import React, { useState, useContext, useEffect } from "react"
 import "./AnimalForm.css"
 import AnimalRepository from "../../repositories/AnimalRepository";
+import EmployeeRepository from "../../repositories/EmployeeRepository";
+import { useHistory } from "react-router";
+import LocationRepository from "../../repositories/LocationRepository";
+import AnimalOwnerRepository from "../../repositories/AnimalOwnerRepository";
+import useSimpleAuth from "../../hooks/ui/useSimpleAuth";
+
 
 
 export default (props) => {
@@ -10,6 +16,20 @@ export default (props) => {
     const [employees, setEmployees] = useState([])
     const [employeeId, setEmployeeId] = useState(0)
     const [saveEnabled, setEnabled] = useState(false)
+    const history = useHistory()
+    const [locationId, setLocationId] = useState(0)
+    const [locations, setLocations] = useState([])
+    const { getCurrentUser } = useSimpleAuth()
+
+    useEffect(() => {
+        LocationRepository.getAll()
+            .then(setLocations)
+    }, [])
+
+    useEffect(() => {
+        EmployeeRepository.getAll()
+            .then(setEmployees)
+    }, [])
 
     const constructNewAnimal = evt => {
         evt.preventDefault()
@@ -22,13 +42,20 @@ export default (props) => {
             const animal = {
                 name: animalName,
                 breed: breed,
-                employeeId: eId,
-                locationId: parseInt(emp.locationId)
+                locationId: locationId
             }
+            if (animalName && breed && employeeId && locationId) {
 
-            AnimalRepository.addAnimal(animal)
-                .then(() => setEnabled(true))
-                .then(() => props.history.push("/animals"))
+                AnimalRepository.addAnimal(animal)
+                .then((res) => {
+                    AnimalOwnerRepository.assignOwner(res.id, getCurrentUser().id)
+                    EmployeeRepository.assignEmployee(res.id, eId)
+                })
+                    .then(() => setEnabled(true))
+                    .then(() => history.push("/animals"))
+            } else {
+                window.alert("Please fill out all fields before submitting")
+            }
         }
     }
 
@@ -58,23 +85,51 @@ export default (props) => {
                     placeholder="Breed"
                 />
             </div>
+
             <div className="form-group">
-                <label htmlFor="employee">Make appointment with caretaker</label>
+                <label htmlFor="location">Choose a Location</label>
                 <select
                     defaultValue=""
-                    name="employee"
-                    id="employeeId"
+                    name="location"
+                    id="locationId"
                     className="form-control"
-                    onChange={e => setEmployeeId(e.target.value)}
+                    onChange={e => setLocationId(parseInt(e.target.value))}
                 >
-                    <option value="">Select an employee</option>
-                    {employees.map(e => (
-                        <option key={e.id} id={e.id} value={e.id}>
-                            {e.name}
+                    <option value="">Choose a Location</option>
+                    {locations.map(l => (
+                        <option key={l.id} id={l.id} value={l.id}>
+                            {l.name}
                         </option>
                     ))}
                 </select>
             </div>
+            {
+                locationId !== 0
+                    ? <div className="form-group">
+                        <label htmlFor="employee">Make appointment with caretaker</label>
+                        <select
+                            defaultValue=""
+                            name="employee"
+                            id="employeeId"
+                            className="form-control"
+                            onChange={e => setEmployeeId(e.target.value)}
+                        >
+                            <option value="">Select an employee</option>
+                            {employees.filter((employee) => {
+                                const matchingLocation = employee?.employeeLocations?.find(location => location.locationId === locationId)
+                                if (matchingLocation) {
+                                    return employee
+                                }
+                            }).map(e => (
+                                <option key={e.id} id={e.id} value={e.id}>
+                                    {e.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    : ""
+            }
+
             <button type="submit"
                 onClick={constructNewAnimal}
                 disabled={saveEnabled}

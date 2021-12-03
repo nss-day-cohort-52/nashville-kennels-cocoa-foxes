@@ -23,7 +23,7 @@ export default ({location}) => {
                 </h5>
             </section>
             <section>
-                Total animals: {location.animals.id?.length}
+                Total animals: {location.animals.length}
             </section>
             <section>
                 Total employees: {location.employeeLocations?.length}
