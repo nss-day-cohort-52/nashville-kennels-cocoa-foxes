@@ -13,10 +13,13 @@ export default () => {
 
     const { locationId } = useParams()
 
-
+ 
+    
     useEffect(() => {
        LocationRepository.get(locationId).then(set)
     }, [locationId])
+
+
 
     return (
         <>
