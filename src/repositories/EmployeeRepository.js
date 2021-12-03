@@ -35,4 +35,7 @@ export default {
     async assignLocation(rel) {
         return await fetchIt(`${Settings.remoteURL}/employeeLocations`, "POST", JSON.stringify(rel))
     },
+    async getEmployeeLocations() {
+        return await fetchIt(`${Settings.remoteURL}/employeeLocations`)
+    }
 }

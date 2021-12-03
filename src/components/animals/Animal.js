@@ -88,6 +88,7 @@ export const Animal =
             if (animalId) {
                 defineClasses("card animal--single")
                 setDetailsOpen(true)
+                resolveResource(animal, animalId, AnimalRepository.get)
 
                 AnimalOwnerRepository.getOwnersByAnimal(animalId).then(d => setPeople(d))
                     .then(() => {
