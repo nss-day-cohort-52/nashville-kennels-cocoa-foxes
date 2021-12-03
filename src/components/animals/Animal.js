@@ -36,6 +36,7 @@ export const Animal =
     const history = useHistory()
     const { animalId } = useParams()
     const { resolveResource, resource: currentAnimal } = useResourceResolver()
+    const [description, setDescription] = useState('')
 
     useEffect(() => {
         setAuth(getCurrentUser().employee)
@@ -63,6 +64,10 @@ export const Animal =
     }, [caretakers])
     // useEffect Hook tells you that your component needs to do something after that render
     
+    useEffect(() => {
+        resolveResource(animal, animalId, AnimalRepository.get)
+    }, [animal])
+
     useEffect(() => {
         if (owners) {
             registerOwners(owners)
@@ -113,6 +118,7 @@ export const Animal =
                 })
         }
     }, [animalId])
+
 
     return (
         //returns JSX or whatever html you want to see in the browser
@@ -172,7 +178,7 @@ export const Animal =
 
                             <h6>Owners</h6>
                             <span className="small">
-                                Owned by { myOwners.map((owner) => {
+                                Owned by {myOwners.map((owner) => {
                                     return owner?.user?.name
                                 }).join(" and ")}
                             </span>
@@ -194,48 +200,73 @@ export const Animal =
                                     : null
                             }
 
+                            {
+                                isEmployee
+                                    ? <> <h6>Add Treatment:</h6><input id="treatment" value={description} onChange={(event) => {
+                                        setDescription(event.target.value)
+                                    }
+                                    }></input> <button onClick={() => {
+                                        
+                                        AnimalRepository.updateTreatment({
+                                            'animalId': currentAnimal.id,
+                                            'timestamp': Date.now(),
+                                            'description': description
+                                        })
+                                            .then(() => {
+                                                if (!animalId) {
+                                                    syncAnimals()
+                                                } 
+                                            })
+                                            .then(() => {
+                                                setDescription('')
+                                            })
+                            }}>submit</button> </>
+                                    : ""
+                            }
+
+
+                            {
+                                detailsOpen && "treatments" in currentAnimal
+                                    ? <div className="small">
+                                        <h6>Treatment History</h6>
+                                        {
+                                            currentAnimal.treatments.map(t => (
+                                                <div key={t.id}>
+                                                    <p style={{ fontWeight: "bolder", color: "grey" }}>
+                                                        {new Date(t.timestamp).toLocaleString("en-US")}
+                                                    </p>
+                                                    <p>{t.description}</p>
+                                                </div>
+                                            ))
+                                            
+                                        }
+                                    </div>
+                                    : ""
+                            }
+
+                        </section>
 
                         {
-                            detailsOpen && "treatments" in currentAnimal
-                                ? <div className="small">
-                                    <h6>Treatment History</h6>
-                                    {
-                                        currentAnimal.treatments.map(t => (
-                                            <div key={t.id}>
-                                                <p style={{ fontWeight: "bolder", color: "grey" }}>
-                                                    {new Date(t.timestamp).toLocaleString("en-US")}
-                                                </p>
-                                                <p>{t.description}</p>
-                                            </div>
-                                        ))
-                                    }
-                                </div>
+                            isEmployee
+                                ? <button className="btn btn-warning mt-3 form-control small" onClick={() =>
+                                    AnimalOwnerRepository
+                                        .removeOwnersAndCaretakers(currentAnimal.id)
+                                        .then(() => {
+                                            AnimalRepository.delete(currentAnimal.id)
+                                        }) // Remove animal
+                                        .then(() => {
+                                            syncAnimals()
+                                        }) // Get all animals
+                                        .then(() => {
+
+                                        })
+                                }>Discharge</button>
                                 : ""
                         }
 
-                    </section>
-
-                    {
-                        isEmployee
-                            ? <button className="btn btn-warning mt-3 form-control small" onClick={() =>
-                                AnimalOwnerRepository
-                                    .removeOwnersAndCaretakers(currentAnimal.id)
-                                    .then(() => {
-                                        AnimalRepository.delete(currentAnimal.id)
-                                    }) // Remove animal
-                                    .then(() => {
-                                        syncAnimals()
-                                    }) // Get all animals
-                                    .then(() => {
-
-                                    })
-                            }>Discharge</button>
-                            : ""
-                    }
-
-                </details>
-            </div>
-        </li>
+                    </details>
+                </div>
+            </li>
         </>
     )
 }

@@ -17,6 +17,7 @@ export default ({ employee }) => {
     const { resolveResource, resource } = useResourceResolver()
     const history = useHistory()
     const [isEmployee, setAuth] = useState(false)
+    const [locations, changeLocation] = useState([])
 
     useEffect(() => {
         setAuth(getCurrentUser().employee)
@@ -30,7 +31,7 @@ export default ({ employee }) => {
             defineClasses("card employee--single")
         }
         resolveResource(employee, employeeId, EmployeeRepository.get)
-    }, [])
+    }, [employee])
 
     useEffect(() => {
         if (resource?.locations?.length > 0) {
@@ -40,13 +41,33 @@ export default ({ employee }) => {
 
     useEffect(() => {
         setCount(resource?.animalCaretakers?.length)
-    })
+    }, [])
+
+    useEffect(() => {
+        LocationRepository
+            .getAll()
+            .then((res) => locations.push(...res))
+
+    }, [])
+
+    useEffect(() => {
+        resolveResource(employee, employeeId, EmployeeRepository.get)
+    }, [employeeId])
 
     const fireEmployee = (id) => {
         EmployeeRepository
             .delete(id)
             .then(EmployeeRepository.getAll)
             .then(() => { history.push("/employees") })
+    }
+
+    const assignLocation = (locationId) => {
+        const locationObj = {
+            userId: parseInt(employeeId),
+            locationId: locationId,
+        }
+        EmployeeRepository.assignLocation(locationObj)
+        resolveResource(employee, employeeId, EmployeeRepository.get)
     }
 
     return (
@@ -76,13 +97,14 @@ export default ({ employee }) => {
                                 Caring for {resource?.animals?.length} animals
                             </section>
                             <section>
-                                Working at {
-                                    <Link className="card-link"
+                                Working at {resource?.locations?.map((location) => {
+                                    return <Link className="card-link"
                                         to={{
                                             pathname: `/locations/${location?.location?.id}`
                                         }}>
                                         {location?.location?.name}
                                     </Link>
+                                })
 
                                 } location
                             </section>
@@ -93,7 +115,17 @@ export default ({ employee }) => {
                 {
                     employeeId
                         ? isEmployee
-                            ? <button className="btn--fireEmployee" onClick={() => { fireEmployee(resource.id) }}>Fire</button>
+                            ? <><button className="btn--fireEmployee" onClick={() => { fireEmployee(resource.id) }}>Fire</button>
+                                <label for="location-select">Choose a location:</label>
+                                {resource?.locations?.length < 2
+                                    ? <select name="locations" id="location-select" onChange={(evt) => assignLocation(parseInt(evt.target.value))} >
+                                        <option value="">--Please choose a location--</option>
+                                        {locations.map((loc) => (
+                                            <option key={loc.id} value={loc.id}>{loc.name}</option>
+                                        ))}
+                                    </select> :
+                                    ""}
+                            </>
                             : ""
                         : ""
                 }

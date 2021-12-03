@@ -24,7 +24,22 @@ export const AnimalListComponent = ({searchResults}) => {
     let { toggleDialog, modalIsOpen } = useModal("#dialog--animal")
 
     const syncAnimals = () => {
-        AnimalRepository.getAll().then(data => petAnimals(data))
+        AnimalRepository.getAll().then((data) => {
+            if (getCurrentUser().employee) {
+                petAnimals(data)
+
+            } else {
+                const customerAnimals = data.filter((animal) => {
+                    let currentUserOwner = animal.animalOwners.find(owner => owner.userId === getCurrentUser().id)
+                    if (currentUserOwner) {
+                        return animal
+                    }
+                }
+                )
+                petAnimals(customerAnimals)
+            }
+            
+        })
     }
 
     const [searchedAnimals, updatedAnimals] = useState([])
