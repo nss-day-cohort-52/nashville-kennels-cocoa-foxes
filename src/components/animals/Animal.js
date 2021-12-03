@@ -150,49 +150,123 @@ export const Animal =
                                             }
                                         </select>
                                         : null
+        const getCare = () => {
+            return EmployeeRepository
+                .getCaretakersByAnimal(currentAnimal.id)
+                .then(care => setCare(care))
+        }
 
-    const getCare = () => {
-        return EmployeeRepository
-            .getCaretakersByAnimal(currentAnimal.id)
-            .then(care => setCare(care))
-    }
+        useEffect(() => {
+            getCare()
+        }, [currentAnimal])
 
-    useEffect(() => {
-        getCare()
-    },[currentAnimal] )
+        const getPeople = () => {
+            return AnimalOwnerRepository
+                .getOwnersByAnimal(currentAnimal.id)
+                .then(people => setPeople(people))
+        }
 
-    const getPeople = () => {
-        return AnimalOwnerRepository
-            .getOwnersByAnimal(currentAnimal.id)
-            .then(people => setPeople(people))
-    }
 
                                 }
 
-                                <h6>Owners</h6>
+        useEffect(() => {
+            if (animalId) {
+                defineClasses("card animal--single")
+                setDetailsOpen(true)
+
+                EmployeeRepository.getCaretakersByAnimal(animalId).then(d => setCare(d))
+                    .then(() => {
+                        EmployeeRepository.getAllCaretakers().then(registerCaretakers)
+                    })
+            }
+        }, [animalId])
+
+        useEffect(() => {
+            if (animalId) {
+                defineClasses("card animal--single")
+                setDetailsOpen(true)
+            }
+        }, [])
+
+
+        useEffect(() => {
+            getPeople()
+        }, [currentAnimal])
+
+        useEffect(() => {
+            if (animalId) {
+                defineClasses("card animal--single")
+                setDetailsOpen(true)
+                resolveResource(animal, animalId, AnimalRepository.get)
+
+                AnimalOwnerRepository.getOwnersByAnimal(animalId).then(d => setPeople(d))
+                    .then(() => {
+                        OwnerRepository.getAllCustomers().then(registerOwners)
+                    })
+            }
+        }, [animalId])
+
+        return (
+            //returns JSX or whatever html you want to see in the browser
+            <>
+                <li className={classes}>
+                    <div className="card-body">
+                        <div className="animal__header">
+                            <h5 className="card-title">
+                                {
+                                    animalId
+                                        ? <div className="card-text medium">{currentAnimal.name}</div>
+                                        : <button className="link--card btn btn-link"
+                                            style={{
+                                                cursor: "pointer",
+                                                "textDecoration": "underline",
+                                                "color": "rgb(94, 78, 196)"
+                                            }}
+                                            onClick={() => {
+                                                if (isEmployee) {
+                                                    showTreatmentHistory(currentAnimal)
+                                                }
+                                                else {
+                                                    history.push(`/animals/${currentAnimal.id}`)
+                                                }
+                                            }}> {currentAnimal.name} </button>
+                                }
+
+                            </h5>
+                            <span className="card-text small">{currentAnimal.breed}</span>
+                        </div>
+
+                        <details open={detailsOpen}>
+                            <summary className="smaller">
+                                <meter min="0" max="100" value={Math.random() * 100} low="25" high="75" optimum="100"></meter>
+                            </summary>
+
+                            <section>
+                                <h6>Caretaker(s)</h6>
                                 <span className="small">
-                                    Owned by {myOwners.map((owner) => {
-                                        return owner?.user?.name
+                                    Cared for by {myCaretakers.slice(0, 2).map((employee) => {
+                                        return employee?.user?.name
                                     }).join(" and ")}
                                 </span>
+                                {
+                                    myCaretakers.length < 2
+                                        ? <select defaultValue=""
+                                            name="caretaker"
+                                            className="form-control small"
+                                            onChange={(event) => { EmployeeRepository.assignEmployee(currentAnimal.id, parseInt(event.target.value)).then(() => { getCare() }) }} >
+                                            <option value="">
+                                                Select {myCaretakers.length === 1 ? "another" : "a"} caretaker
+                                            </option>
+                                            {
+                                                allCaretakers.map(
+                                                    c =>
+                                                        <option key={c.id} value={c.id}>{c.name}</option>)
+                                            }
+                                        </select>
+                                        : null
+                                }
 
-    useEffect(() => {
-        if (animalId) {
-            defineClasses("card animal--single")
-            setDetailsOpen(true)
-
-            EmployeeRepository.getCaretakersByAnimal(animalId).then(d => setCare(d))
-                .then(() => {
-                        EmployeeRepository.getAllCaretakers().then(registerCaretakers)
-                })
-        }
-    }, [animalId])
-
-    useEffect(() => {
-        if (animalId) {
-            defineClasses("card animal--single")
-            setDetailsOpen(true)
-
+<
                                 {
                                     myOwners.length < 2
                                         ? <select defaultValue=""
@@ -229,23 +303,14 @@ export const Animal =
                                     return employee?.user?.name
                                 }).join(" and ")}
                             </span>
-                                {
-                                     myCaretakers.length < 2
-                                     ? <select defaultValue=""
-                                         name="caretaker"
-                                         className="form-control small"
-                                         onChange={(event) => {EmployeeRepository.assignEmployee(currentAnimal.id, parseInt(event.target.value)).then(()=> {getCare()})}} >
-                                         <option value="">
-                                             Select {myCaretakers.length === 1 ? "another" : "a"} caretaker
-                                         </option>
-                                         {
-                                             allCaretakers.map(
-                                                 c => 
-                                                <option key={c.id} value={c.id}>{c.name}</option>)
-                                         }
-                                     </select>
-                                     : null
 
+                                <h6>Owners</h6>
+                                <span className="small">
+                                    Owned by {myOwners.map((owner) => {
+                                        return owner?.user?.name
+                                    }).join(" and ")}
+                                </span>
+                             
                                             AnimalRepository.updateTreatment({
                                                 'animalId': currentAnimal.id,
                                                 'timestamp': Date.now(),
@@ -254,6 +319,9 @@ export const Animal =
                                                 .then(() => {
                                                     if (!animalId) {
                                                         syncAnimals()
+
+                                                    } else {
+                                                        resolveResource(animal, animalId, AnimalRepository.get)
                                                     }
                                                 })
                                                 .then(() => {
@@ -305,12 +373,14 @@ export const Animal =
                                                 }
                                             })
 
+
                                             .then(() => {
 
                                             })
                                     }>Discharge</button>
                                     : ""
                             }
+
 
                         </details>
                     </div>
@@ -319,6 +389,3 @@ export const Animal =
         )
     }
 
-                        </section>
-
-                         

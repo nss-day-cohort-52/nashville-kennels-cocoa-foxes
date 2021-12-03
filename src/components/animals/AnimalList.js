@@ -44,25 +44,6 @@ export const AnimalListComponent = ({searchResults}) => {
         })
     }
 
-    const combineAnimals = () => {
-        EmployeeRepository.getAll().then((data) => {
-            if (getCurrentUser().employee) {
-                petAnimals(data)
-
-            } else {
-                const caretakerAnimals = data.filter((animal) => {
-                    let currentUserCaretaker = animal.animalCaretakers.find(employee => employee.userId === getCurrentUser().id)
-                    if (currentUserCaretaker) {
-                        return animal
-                    }
-                }
-                )
-                petAnimals(caretakerAnimals)
-            }
-            
-        })
-    }
-
     const [searchedAnimals, updatedAnimals] = useState([])
     useEffect(() => {
         updatedAnimals(searchResults)
@@ -87,12 +68,6 @@ useEffect(()=>{
         syncAnimals()
     }, [])
 
-
-    useEffect(() => {
-        EmployeeRepository.getAllCaretakers().then(setCare)
-        EmployeeRepository.getAll().then(setAnimalCaretakers)
-        combineAnimals()
-    }, [])
 
     const showTreatmentHistory = animal => {
         setCurrentAnimal(animal)
