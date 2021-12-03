@@ -65,7 +65,7 @@ export default ({ employee }) => {
         const locationObj = {
             userId: parseInt(employeeId),
             locationId: locationId,
-        }
+        } 
         EmployeeRepository.assignLocation(locationObj)
         resolveResource(employee, employeeId, EmployeeRepository.get)
     }
