@@ -198,6 +198,8 @@ export const Animal =
                                                 .then(() => {
                                                     if (!animalId) {
                                                         syncAnimals()
+                                                    } else {
+                                                        resolveResource(animal, animalId, AnimalRepository.get)
                                                     }
                                                 })
                                                 .then(() => {
