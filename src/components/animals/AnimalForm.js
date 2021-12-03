@@ -3,6 +3,7 @@ import "./AnimalForm.css"
 import AnimalRepository from "../../repositories/AnimalRepository";
 import EmployeeRepository from "../../repositories/EmployeeRepository";
 import { useHistory } from "react-router";
+import LocationRepository from "../../repositories/LocationRepository";
 
 
 
@@ -15,11 +16,16 @@ export default (props) => {
     const [saveEnabled, setEnabled] = useState(false)
     const history = useHistory()
     const [locationId, setLocationId] = useState(0)
+    const [locations, setLocations] = useState([])
+
+    useEffect(() => {
+        setLocations(LocationRepository.getAll())
+    }, [])
 
     useEffect(() => {
         EmployeeRepository.getAll()
-        .then(setEmployees)
-    },[])
+            .then(setEmployees)
+    }, [])
 
     const constructNewAnimal = evt => {
         evt.preventDefault()
@@ -33,7 +39,7 @@ export default (props) => {
                 name: animalName,
                 breed: breed,
                 employeeId: eId,
-                locationId: parseInt(emp.locationId)
+                locationId: locationId
             }
 
             AnimalRepository.addAnimal(animal)
@@ -70,40 +76,46 @@ export default (props) => {
             </div>
 
             <div className="form-group">
-                <label htmlFor="employee">Choose a Location</label>
+                <label htmlFor="location">Choose a Location</label>
                 <select
                     defaultValue=""
-                    name="employee"
-                    id="employeeId"
+                    name="location"
+                    id="locationId"
                     className="form-control"
-                    onChange={e => setEmployeeId(e.target.value)}
+                    onChange={e => setLocationId(parseInt(e.target.value))}
                 >
-                    <option value="">Select an employee</option>
-                    {employees.map(e => (
-                        <option key={e.id} id={e.id} value={e.id}>
-                            {e.name}
+                    <option value="">Choose a Location</option>
+                    {employees.map(l => (
+                        <option key={l.id} id={l.id} value={l.id}>
+                            {l.name}
                         </option>
                     ))}
                 </select>
             </div>
+            {
+                locationId !== 0
+                    ? <div className="form-group">
+                        <label htmlFor="employee">Make appointment with caretaker</label>
+                        <select
+                            defaultValue=""
+                            name="employee"
+                            id="employeeId"
+                            className="form-control"
+                            onChange={e => setEmployeeId(e.target.value)}
+                        >
+                            <option value="">Select an employee</option>
+                            {employees.filter((employee) => {
+                                const matchingLocation = 
+                            }).map(e => (
+                                <option key={e.id} id={e.id} value={e.id}>
+                                    {e.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    : ""
+            }
 
-            <div className="form-group">
-                <label htmlFor="employee">Make appointment with caretaker</label>
-                <select
-                    defaultValue=""
-                    name="employee"
-                    id="employeeId"
-                    className="form-control"
-                    onChange={e => setEmployeeId(e.target.value)}
-                >
-                    <option value="">Select an employee</option>
-                    {employees.map(e => (
-                        <option key={e.id} id={e.id} value={e.id}>
-                            {e.name}
-                        </option>
-                    ))}
-                </select>
-            </div>
             <button type="submit"
                 onClick={constructNewAnimal}
                 disabled={saveEnabled}
